@@ -1,3 +1,7 @@
+import control 
+import numpy as np
+
+
 class PIDController:
     def __init__(self, Kp, Ki, Kd):
         self.Kp = Kp
@@ -16,10 +20,20 @@ class PIDController:
         self.integral += error * dt
         I = self.Ki * self.integral
     
-        # Derivative (using velocity directly is cleaner)
+        # derivative
         D = self.Kd * (0 - current_v) 
     
-        # Total Output + FEED FORWARD (The thrust needed to hover)
+        # total output with hover thrust to counteract gravity
         hover_thrust = 9.81 
         return P + I + D + hover_thrust
+    
+class LQRController:
+    def __init__(self, A, B, Q, R ):
+
+        #we only care about K, so we ignore the other two outputs of the lqr function
+        self.K, _, _ = control.lqr(A, B, Q, R)
+    
+    def compute(self, state):
+        return np.dot(-self.K, state)
+    
 
