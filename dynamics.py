@@ -15,4 +15,4 @@ def rocket_dynamics(state, thrust):
     dzdt = v  #change of altitude over time
     a = (thrust / ROCKET_MASS) - g #acceleration of rocket
     
-    return np.array([dzdt, a])
+    return np.concatenate([np.atleast_1d(dzdt), np.atleast_1d(a)])

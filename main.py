@@ -19,7 +19,7 @@ pid = PIDController(Kp = 3, Ki = 0.05, Kd = 8.0)
 #lqr set up
 A = np.array([[0, 1], [0, 0]])
 B = np.array([[0], [1/mass]])
-Q = np.diag([100, 10]) #state cost
+Q = np.diag([1.0, 10.0]) #state cost
 R = np.array([[0.01]]) #control cost
 lqr = LQRController(A, B, Q, R)
 
@@ -30,7 +30,8 @@ z_list = []
 v_list = []
 thrust_list = []
 
-set_LQR = False #wip, not fully implemented yet, so defaulting to PID for now
+#toggle LQR, otherwise PID
+set_LQR = True
 
 
 print(f"Running" + (" PID Controller" if not set_LQR else " LQR Controller"))
@@ -43,7 +44,9 @@ for t in np.arange(0, t_final, dt):
         break
     
     if set_LQR:
-        thrust = lqr.compute(state)
+        error = state - np.array([z_target, 0]) 
+        #hover thrust to counteract gravity to avoid the sucide burns before
+        thrust = lqr.compute(error) + (mass * 9.81) 
     else:
         thrust = pid.compute(z_target, z, v, dt)
         
@@ -62,7 +65,12 @@ plt.subplot(3, 1, 1)
 plt.plot(t_list, z_list, label="Altitude (m)", color="blue", linewidth=2)
 plt.axhline(y=z_target, color='r', linestyle='--', label="Target")
 plt.ylabel("Altitude [m]")
-plt.title("PID Controller Results w/ 1 kg rocket w/ 2 TWR")
+if not set_LQR:
+    print(f"Kd: {pid.Kd}, Ki: {pid.Ki}, Kp: {pid.Kp}")
+    plt.title("PID Controller Results w/ 1 kg rocket w/ 2 TWR")
+else:
+    plt.title("LQR Controller Results w/ 1 kg rocket w/ 2 TWR")
+
 plt.legend()
 plt.grid(True)
 
