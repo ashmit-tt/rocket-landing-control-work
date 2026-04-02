@@ -4,6 +4,17 @@ This project simulates a 1D vertical landing maneuver of a 1 kg rocket. The goal
 touchdown at a varying target height (currently 0 m) at near-zero velocity. I made this simulation in order to compare classical control theory 
 applications (PID) to modern control theory applications (LQR) and to be able to work with these models myself.
 
+### Results
+
+| Metric | PID | LQR |
+|--------|-----|-----|
+| Landing time | 9.01 s | ~15 s |
+| Touchdown velocity | ~−1 m/s | ~0 m/s |
+| Peak velocity | −26 m/s | −23 m/s |
+| Thrust behavior | Overshoot spike | Smooth decay |
+| Gravity handling | Feed-forward term required | Encoded in state-space model |
+| Tuning method | Manual (P, I, D) | Q/R matrix optimization |
+
 
 ### Technical Specificiations:
 
